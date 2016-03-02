@@ -90,6 +90,11 @@ define staging::extract (
       $command = "tar xjf ${source_path}${strip_opt}"
     }
 
+
+    /.gz$/: {
+      $command = "gunzip ${source_path}"
+    }
+
     /.zip$/: {
       $command = "unzip ${source_path}"
     }
