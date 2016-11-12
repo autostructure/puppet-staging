@@ -1,7 +1,7 @@
 # #### Overview:
 #
 # Define resource to retrieve files to staging directories. It is
-# intententionally not replacing files, as these intend to be large binaries
+# intentionally not replacing files, as these intend to be large binaries
 # that are versioned.
 #
 # #### Notes:
@@ -16,7 +16,7 @@ define staging::file (
   $certificate = undef, #: https certificate file
   $password    = undef, #: https or ftp user password or https certificate password
   $environment = undef, #: environment variable for settings such as http_proxy, https_proxy, of ftp_proxy
-  $timeout     = undef, #: the the time to wait for the file transfer to complete
+  $timeout     = undef, #: the time to wait for the file transfer to complete
   $curl_option = undef, #: options to pass to curl
   $wget_option = undef, #: options to pass to wget
   $tries       = undef, #: amount of retries for the file transfer when non transient connection errors exist
@@ -24,7 +24,7 @@ define staging::file (
   $subdir      = $caller_module_name
 ) {
 
-  include staging
+  include ::staging
 
   $quoted_source = shellquote($source)
 
@@ -55,15 +55,17 @@ define staging::file (
 
   case $::staging_http_get {
     'curl', default: {
-      $http_get        = "curl ${curl_option} -f -L -o ${target_file} ${quoted_source}"
-      $http_get_passwd = "curl ${curl_option} -f -L -o ${target_file} -u ${username}:${password} ${quoted_source}"
-      $http_get_cert   = "curl ${curl_option} -f -L -o ${target_file} -E ${certificate}:${password} ${quoted_source}"
-      $ftp_get         = "curl ${curl_option} -o ${target_file} ${quoted_source}"
-      $ftp_get_passwd  = "curl ${curl_option} -o ${target_file} -u ${username}:${password} ${quoted_source}"
+      $quoted_credentials = shellquote("${username}:${password}")
+      $http_get           = "curl ${curl_option} -f -L -o ${target_file} ${quoted_source}"
+      $http_get_passwd    = "curl ${curl_option} -f -L -o ${target_file} -u ${quoted_credentials} ${quoted_source}"
+      $http_get_cert      = "curl ${curl_option} -f -L -o ${target_file} -E ${certificate}:${password} ${quoted_source}"
+      $ftp_get            = "curl ${curl_option} -o ${target_file} ${quoted_source}"
+      $ftp_get_passwd     = "curl ${curl_option} -o ${target_file} -u ${username}:${password} ${quoted_source}"
     }
     'wget': {
+      $quoted_password = shellquote($password)
       $http_get        = "wget ${wget_option} -O ${target_file} ${quoted_source}"
-      $http_get_passwd = "wget ${wget_option} -O ${target_file} --user=${username} --password=${password} ${quoted_source}"
+      $http_get_passwd = "wget ${wget_option} -O ${target_file} --user=${username} --password=${quoted_password} ${quoted_source}"
       $http_get_cert   = "wget ${wget_option} -O ${target_file} --user=${username} --certificate=${certificate} ${quoted_source}"
       $ftp_get         = $http_get
       $ftp_get_passwd  = $http_get_passwd
@@ -92,8 +94,8 @@ define staging::file (
         }
       } else {
         file { $target_file:
-          source             => $source,
-          replace            => false,
+          source  => $source,
+          replace => false,
         }
       }
     }
