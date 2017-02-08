@@ -103,15 +103,15 @@
       "version_requirement": ">=2.7.0"
     }
   ],
-  "name": "puppet-staging",
+  "name": "autostructure-staging",
   "description": "Manages compressed file staging and deployment.",
   "version": "2.0.1",
   "author": "voxpupuli",
   "summary": "Compressed file staging and deployment",
   "license": "Apache-2.0",
-  "source": "https://github.com/voxpupuli/puppet-staging",
-  "project_page": "https://github.com/voxpupuli/puppet-staging",
-  "issues_url": "https://github.com/voxpupuli/puppet-staging/issues",
+  "source": "https://github.com/autostructure/puppet-staging.git",
+  "project_page": "https://github.com/autostructure/puppet-staging.git",
+  "issues_url": "https://github.com/autostructure/puppet-staging.git/issues",
   "dependencies": [
 
   ]
